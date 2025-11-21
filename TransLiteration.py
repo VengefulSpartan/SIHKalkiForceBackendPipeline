@@ -1,11 +1,25 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 import base64
+from fastapi.middleware.cors import CORSMiddleware
 import io
 import numpy as np
 import easyocr
 from PIL import Image
 app= FastAPI()
+
+
+#cors
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],      # Allows ALL IPs (Phone, Laptop, etc.)
+    allow_credentials=False,  # Set to False for wildcard (*)
+    allow_methods=["*"],      # Allows POST, OPTIONS, GET
+    allow_headers=["*"],      # Allows all headers
+)
+
+
+
 reader = easyocr.Reader(['en','hi'],gpu=False)
 class ImageRequest(BaseModel):
     image_base64:str
