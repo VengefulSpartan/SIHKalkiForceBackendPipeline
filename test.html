@@ -1,5 +1,12 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <title>KalkiForce OCR Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
 <body>
     <h2>KalkiForce OCR Test</h2>
     <input type="file" accept="image/*" capture="camera" id="cameraInput">
@@ -7,20 +14,19 @@
     <pre id="result"></pre>
 
     <script>
-        // ⚠️ REPLACE WITH YOUR UBUNTU IP (e.g., 192.168.0.193)
-        const SERVER_URL = "http://10.55.65.31:8000/predict";
+        // ⚠️ Replace with your laptop's IP
+        const SERVER_URL = "http://192.168.0.194:8000/predict";
 
         document.getElementById('cameraInput').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
             document.getElementById('status').innerText = "Processing...";
-            
-            // Convert to Base64
+
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = async () => {
-                const base64String = reader.result; // Includes "data:image..."
+                const base64String = reader.result;
 
                 try {
                     const response = await fetch(SERVER_URL, {
@@ -28,9 +34,16 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ image_base64: base64String })
                     });
-                    
+
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
                     const data = await response.json();
-                    document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+                    if (data.data.length === 0) {
+                        document.getElementById('result').innerText = "No text detected.";
+                    } else {
+                        document.getElementById('result').innerText = data.data.map(obj => obj.text).join("\n");
+                    }
+
                     document.getElementById('status').innerText = "Done!";
                 } catch (err) {
                     document.getElementById('status').innerText = "Error: " + err;
