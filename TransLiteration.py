@@ -66,6 +66,8 @@ app.add_middleware(
 
 # If Tesseract is not in PATH, specify the full path
 # pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
 
 class ImageRequest(BaseModel):
     image_base64: str
